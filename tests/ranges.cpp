@@ -10,7 +10,7 @@ TEST(FundamentalsTest, ConvertToString)
 {
     EXPECT_EQ(sfy::to_string(5), "5");
     EXPECT_EQ(sfy::to_string(0.5), "0.5");
-    EXPECT_EQ(sfy::to_string('a'), "a");
+    EXPECT_EQ(sfy::to_string('a'), "'a'");
     EXPECT_EQ(sfy::to_string(true), "true");
     EXPECT_EQ(sfy::to_string(false), "false");
 }
@@ -18,9 +18,38 @@ TEST(FundamentalsTest, ConvertToString)
 TEST(StringTest, StringToString)
 {
     std::string str = "Hello";
-    EXPECT_EQ(sfy::to_string(str), "Hello");
+    EXPECT_EQ(sfy::to_string(str), R"("Hello")");
+    EXPECT_EQ(sfy::to_string(""), R"("")");
+    EXPECT_EQ(sfy::to_string("World"), R"("World")");
+    char str1[] = "Hello, world!";
+    EXPECT_EQ(sfy::to_string(str1), R"("Hello, world!")");
+}
 
-    EXPECT_EQ(sfy::to_string("World"), "World");
+TEST(PairTest, PairToString)
+{
+    std::pair<int, int> pair = {5, 10};
+    EXPECT_EQ(sfy::to_string(pair), "(5, 10)");
+
+    std::pair<std::vector<int>, std::vector<char>> pair1;
+    pair1.first = {1, 2, 3};
+    pair1.second = {'a', 'b', 'c'};
+    EXPECT_EQ(sfy::to_string(pair1), "([1, 2, 3], ['a', 'b', 'c'])");
+}
+
+TEST(TupleTest, TupleToString)
+{
+    std::tuple<int, char, std::string> t = {1, 'a', "Hello world"};
+    EXPECT_EQ(sfy::to_string(t), R"((1, 'a', "Hello world"))");
+}
+
+TEST(CArraysTest, CArrayToString)
+{
+    int values[] = {1, 2, 3, 4, 5};
+    EXPECT_EQ(sfy::to_string(values), "[1, 2, 3, 4, 5]");
+
+    std::pair<int, char> pairs[] = {{1, 'a'},
+                                    {2, 'b'}};
+    EXPECT_EQ(sfy::to_string(pairs), "[(1, 'a'), (2, 'b')]");
 }
 
 TEST(SequenceTest, VectorToString)
@@ -40,17 +69,17 @@ TEST(SequenceTest, VectorToString)
         p.first = "Hello";
         p.second = "World";
     }
-    EXPECT_EQ(sfy::to_string(vec1), "[(Hello, World)]");
+    EXPECT_EQ(sfy::to_string(vec1), R"([("Hello", "World")])");
 
     // Fundamental Tuples.
     std::vector<std::tuple<int, char>> vec2;
     vec2.push_back(std::make_tuple(1, 'a'));
-    EXPECT_EQ(sfy::to_string(vec2), "[(1, a)]");
+    EXPECT_EQ(sfy::to_string(vec2), "[(1, 'a')]");
 
     // Tuple of pairs.
     std::vector<std::tuple<char, std::pair<int, char>>> vec3;
     vec3.push_back(std::make_tuple('a', std::make_pair(1, 'a')));
-    EXPECT_EQ(sfy::to_string(vec3), "[(a, (1, a))]");
+    EXPECT_EQ(sfy::to_string(vec3), "[('a', (1, 'a'))]");
 }
 
 TEST(OrderedTest, SetToString)
@@ -65,7 +94,7 @@ TEST(OrderedTest, MapToString)
             {'a', 10},
             {'b', 20}
     };
-    EXPECT_EQ(sfy::to_string(map), "{a: 10, b: 20}");
+    EXPECT_EQ(sfy::to_string(map), "{'a': 10, 'b': 20}");
 }
 
 TEST(UnorderedTest, UnorderedSetToString)
@@ -80,12 +109,12 @@ TEST(UnorderedTest, UnorderedMapToString)
             {"hello", 10},
             {"world", 20}
     };
-    EXPECT_EQ(sfy::to_string(map), "{hello: 10, world: 20}");
+    EXPECT_EQ(sfy::to_string(map), R"({"hello": 10, "world": 20})");
 
     std::vector<std::unordered_map<std::string, int>> maps;
     maps.push_back(map);
     maps.push_back(map);
-    EXPECT_EQ(sfy::to_string(maps), "[{world: 20, hello: 10}, {world: 20, hello: 10}]");
+    EXPECT_EQ(sfy::to_string(maps), R"([{"world": 20, "hello": 10}, {"world": 20, "hello": 10}])");
 }
 
 int main()
