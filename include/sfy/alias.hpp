@@ -15,4 +15,4 @@ template <typename T>
 using Iterator_t = typename T::iterator;
 
 template <typename T>
-using Iterator_category = typename std::iterator_traits<T>::iterator_category;
+using Iterator_c = typename std::iterator_traits<T>::iterator_category;

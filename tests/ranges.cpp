@@ -15,6 +15,14 @@ TEST(FundamentalsTest, ConvertToString)
     EXPECT_EQ(sfy::to_string(false), "false");
 }
 
+TEST(StringTest, StringToString)
+{
+    std::string str = "Hello";
+    EXPECT_EQ(sfy::to_string(str), "Hello");
+
+    EXPECT_EQ(sfy::to_string("World"), "World");
+}
+
 TEST(SequenceTest, VectorToString)
 {
     // Integers.
@@ -57,7 +65,7 @@ TEST(OrderedTest, MapToString)
             {'a', 10},
             {'b', 20}
     };
-    EXPECT_EQ(sfy::to_string(map), "[{a: 10}, {b: 20}]");
+    EXPECT_EQ(sfy::to_string(map), "{a: 10, b: 20}");
 }
 
 TEST(UnorderedTest, UnorderedSetToString)
@@ -68,11 +76,16 @@ TEST(UnorderedTest, UnorderedSetToString)
 
 TEST(UnorderedTest, UnorderedMapToString)
 {
-    std::unordered_map<char, int> map = {
-            {'a', 10},
-            {'b', 20}
+    std::unordered_map<std::string, int> map = {
+            {"hello", 10},
+            {"world", 20}
     };
-    EXPECT_EQ(sfy::to_string(map), "[{a: 10}, {b: 20}]");
+    EXPECT_EQ(sfy::to_string(map), "{hello: 10, world: 20}");
+
+    std::vector<std::unordered_map<std::string, int>> maps;
+    maps.push_back(map);
+    maps.push_back(map);
+    EXPECT_EQ(sfy::to_string(maps), "[{world: 20, hello: 10}, {world: 20, hello: 10}]");
 }
 
 int main()
