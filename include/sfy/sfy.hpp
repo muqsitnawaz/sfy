@@ -1,5 +1,4 @@
 
-#include <vector>
 #include <string>
 
 #include <fmt/format.h>
@@ -8,6 +7,8 @@
 
 namespace sfy
 {
+    // TODO: Add overloads for std::string type.
+
     template <Fundamental F>
     auto to_string(F f)
     {
@@ -35,14 +36,27 @@ namespace sfy
         return tuple_impl(t, std::make_index_sequence<sizeof...(Ts)>());
     }
 
-    template <Range Rng>
-    std::string to_string(Rng rng) noexcept
+    template <ValueContainer C>
+    std::string to_string(C container) noexcept
     {
         std::string ret = "[";
-        for (size_t ctr = 0; auto elem : rng)
+        for (size_t ctr = 0; auto elem : container)
         {
             ret = ctr == 0 ? fmt::format("{}{}", ret, to_string(elem))
                            : fmt::format("{}, {}", ret, to_string(elem));
+            ctr += 1;
+        }
+        return fmt::format("{}]", ret);
+    }
+
+    template <KeyValueContainer C>
+    std::string to_string(C container) noexcept
+    {
+        std::string ret = "[";
+        for (size_t ctr = 0; auto elem : container)
+        {
+            ret = ctr == 0 ? fmt::format("{}{{{}: {}}}", ret, to_string(elem.first), to_string(elem.second))
+                           : fmt::format("{}, {{{}: {}}}", ret, to_string(elem.first), to_string(elem.second));
             ctr += 1;
         }
         return fmt::format("{}]", ret);

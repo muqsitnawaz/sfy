@@ -1,8 +1,8 @@
 
-#include <gtest/gtest.h>
+#include <unordered_set>
+#include <unordered_map>
 
-#include <range/v3/view/filter.hpp>
-#include <range/v3/numeric/iota.hpp>
+#include <gtest/gtest.h>
 
 #include <sfy/sfy.hpp>
 
@@ -15,7 +15,7 @@ TEST(FundamentalsTest, ConvertToString)
     EXPECT_EQ(sfy::to_string(false), "false");
 }
 
-TEST(ContainersTest, VectorToString)
+TEST(SequenceTest, VectorToString)
 {
     // Integers.
     std::vector<int> vec = {1, 2, 3};
@@ -45,12 +45,34 @@ TEST(ContainersTest, VectorToString)
     EXPECT_EQ(sfy::to_string(vec3), "[(a, (1, a))]");
 }
 
-TEST(RangesTest, RangeToString)
+TEST(OrderedTest, SetToString)
 {
-    std::vector<int> vec(10);
-    ranges::iota(vec, 0);
-    auto even_vec = vec | ranges::views::filter([](const auto i) { return i % 2 == 0; });
-    EXPECT_EQ(sfy::to_string(even_vec), "[0, 2, 4, 6, 8]");
+    std::set<int> set = {10, 20, 30, 40, 50};
+    EXPECT_EQ(sfy::to_string(set), "[10, 20, 30, 40, 50]");
+}
+
+TEST(OrderedTest, MapToString)
+{
+    std::map<char, int> map = {
+            {'a', 10},
+            {'b', 20}
+    };
+    EXPECT_EQ(sfy::to_string(map), "[{a: 10}, {b: 20}]");
+}
+
+TEST(UnorderedTest, UnorderedSetToString)
+{
+    std::unordered_set<int> set = {10, 20, 30, 40, 50};
+    EXPECT_EQ(sfy::to_string(set), "[10, 20, 30, 40, 50]");
+}
+
+TEST(UnorderedTest, UnorderedMapToString)
+{
+    std::unordered_map<char, int> map = {
+            {'a', 10},
+            {'b', 20}
+    };
+    EXPECT_EQ(sfy::to_string(map), "[{a: 10}, {b: 20}]");
 }
 
 int main()
