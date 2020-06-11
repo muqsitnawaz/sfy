@@ -28,11 +28,7 @@ find_package(GTest REQUIRED)
 # Set include and link dirs.
 set(INCLUDE_DIRS /usr/local/include ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Ranges.
-add_executable(ranges src/ranges.cpp)
-target_include_directories(ranges PRIVATE ${INCLUDE_DIRS})
-
 # Tests.
-add_executable(test_ranges tests/ranges.cpp)
-target_include_directories(test_ranges PRIVATE ${INCLUDE_DIRS})
-target_link_libraries(test_ranges PRIVATE ${GTEST_LIBRARIES})
+add_executable(tests_all tests/all.cpp)
+target_include_directories(tests_all PRIVATE ${INCLUDE_DIRS})
+target_link_libraries(tests_all PRIVATE ${GTEST_LIBRARIES})

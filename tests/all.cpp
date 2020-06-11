@@ -6,6 +6,8 @@
 
 #include <sfy/sfy.hpp>
 
+#include <fmt/chrono.h>
+
 TEST(FundamentalsTest, ConvertToString)
 {
     EXPECT_EQ(sfy::to_string(5), "5");
@@ -60,22 +62,25 @@ TEST(ComplexTest, ComplexToString)
 TEST(ChoroTest, DurationToString)
 {
     std::chrono::nanoseconds dur(1);
-    EXPECT_EQ(sfy::to_string(dur), "1 nanosecond");
+    EXPECT_EQ(sfy::to_string(dur), "1ns");
 
     std::chrono::microseconds dur1(1000);
-    EXPECT_EQ(sfy::to_string(dur1), "1000 microseconds");
+    EXPECT_EQ(sfy::to_string(dur1), "1000µs");
 
     std::chrono::milliseconds dur2(500);
-    EXPECT_EQ(sfy::to_string(dur2), "500 milliseconds");
+    EXPECT_EQ(sfy::to_string(dur2), "500ms");
 
     std::chrono::seconds dur3(10);
-    EXPECT_EQ(sfy::to_string(dur3), "10 seconds");
+    EXPECT_EQ(sfy::to_string(dur3), "10s");
 
-    std::chrono::hours dur4(1);
-    EXPECT_EQ(sfy::to_string(dur4), "1 hour");
+    std::chrono::minutes dur4(15);
+    EXPECT_EQ(sfy::to_string(dur4), "15m");
 
-    std::chrono::years dur5(4);
-    EXPECT_EQ(sfy::to_string(dur5), "4 years");
+    std::chrono::hours dur5(1);
+    EXPECT_EQ(sfy::to_string(dur5), "1h");
+
+    std::chrono::weeks dur6(4);
+    EXPECT_EQ(sfy::to_string(dur6), "4[604800]s");
 }
 
 TEST(ChronoTest, TimePointToString)

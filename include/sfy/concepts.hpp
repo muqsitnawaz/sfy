@@ -7,10 +7,19 @@
 namespace sfy
 {
     template <typename T>
-    concept Character = is_character_v<T>();
+    concept RandomAccessIterator = std::is_same_v<Iterator_c<T>, std::random_access_iterator_tag>;
 
     template <typename T>
-    concept Arithmetic = sfy::is_arithmetic_v<T>();
+    concept BidirectionalIterator = std::is_same_v<Iterator_c<T>, std::bidirectional_iterator_tag>;
+
+    template <typename T>
+    concept ForwardIterator = std::is_same_v<Iterator_c<T>, std::forward_iterator_tag>;
+
+    template <typename T>
+    concept Arithmetic = is_arithmetic_v<T>();
+
+    template <typename T>
+    concept Character = is_character_v<T>();
 
     template <typename T>
     concept String = is_c_str_v<T>() || is_std_basic_string_v<T>;
@@ -32,15 +41,6 @@ namespace sfy
 
     template <typename T>
     concept ChronoTimePoint = is_std_chrono_time_point_v<T>;
-
-    template <typename T>
-    concept RandomAccessIterator = std::is_same_v<Iterator_c<T>, std::random_access_iterator_tag>;
-
-    template <typename T>
-    concept BidirectionalIterator = std::is_same_v<Iterator_c<T>, std::bidirectional_iterator_tag>;
-
-    template <typename T>
-    concept ForwardIterator = std::is_same_v<Iterator_c<T>, std::forward_iterator_tag>;
 
     template <typename T>
     concept Sequence =
