@@ -16,10 +16,7 @@ namespace sfy
     concept Arithmetic = sfy::is_arithmetic_v<T>();
 
     template <typename T>
-    concept CString = is_c_str_v<T>();
-
-    template <typename T>
-    concept String = CString<T> || is_std_basic_string_v<T>();
+    concept String = is_c_str_v<T>() || is_std_basic_string_v<T>();
 
     template <typename T>
     concept Pair = is_pair_v<T>();
@@ -28,7 +25,13 @@ namespace sfy
     concept Tuple = is_tuple_v<T>();
 
     template <typename T>
-    concept CArray = is_c_arr_v<T>();
+    concept Ratio = is_std_ratio_v<T>();
+
+    template <typename T>
+    concept Complex = is_std_complex_v<T>();
+
+    template <typename T>
+    concept ChronoDuration = is_std_chrono_duration_v<T>();
 
     template <typename T>
     concept RandomAccessIterator = std::is_same_v<Iterator_c<T>, std::random_access_iterator_tag>;
@@ -113,7 +116,8 @@ namespace sfy
     concept KeyValueContainer = OrderedKeyValues<T> || UnorderedKeyValues<T>;
 
     template <typename T>
-    concept Sfyable = Character<T> || Arithmetic<T> ||
-                      String<T> || Pair<T> || Tuple<T> ||
+    concept Sfyable = Character<T> || Arithmetic<T> || String<T> ||
+                      Pair<T> || Tuple<T> ||
+                      Ratio<T> || Complex<T> ||
                       ValueContainer<T> || KeyValueContainer<T>;
 }

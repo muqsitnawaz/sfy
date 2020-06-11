@@ -9,13 +9,13 @@
 namespace sfy
 {
     template <Arithmetic A>
-    inline auto to_string(A a)
+    inline auto to_string(A a) noexcept
     {
         return fmt::format("{}", a);
     }
 
     template <Character C>
-    inline auto to_string(C c)
+    inline auto to_string(C c) noexcept
     {
         return fmt::format("'{}'", c);
     }
@@ -26,18 +26,23 @@ namespace sfy
         return fmt::format(R"("{}")", s);
     }
 
-    // Forward declarations.
+    // Begin: Forward declarations.
+    template <Tuple T>
+    inline auto to_string(T t) noexcept;
+
+    template <typename T, std::size_t N>
+    requires Sfyable<T> && (!Character<T>)
+    std::string to_string(T(& c_array)[N]) noexcept;
+
     template <ValueContainer C>
     std::string to_string(C container) noexcept;
 
     template <KeyValueContainer C>
     std::string to_string(C container) noexcept;
-
-    template <typename...Ts>
-    inline auto to_string(std::tuple<Ts...> t);
+    // End: Forward declarations.
 
     template <Pair P>
-    inline auto to_string(P p)
+    inline auto to_string(P p) noexcept
     {
         return fmt::format("({}, {})", to_string(p.first), to_string(p.second));
     }
@@ -52,12 +57,40 @@ namespace sfy
                                 : (fmt::format("{}, {}", ret, to_string(std::get<I>(t))))));
             return fmt::format("{})", ret);
         }
+
+        template <typename...Ts>
+        inline auto to_string(std::tuple<Ts...> t)
+        {
+            return tuple_impl(t, std::make_index_sequence<sizeof...(Ts)>());
+        }
     }
 
-    template <typename...Ts>
-    inline auto to_string(std::tuple<Ts...> t)
+    template <Tuple T>
+    inline auto to_string(T t) noexcept
     {
-        return detail::tuple_impl(t, std::make_index_sequence<sizeof...(Ts)>());
+        return detail::to_string(t);
+    }
+
+    template <Ratio R>
+    inline auto to_string(R) noexcept
+    {
+        return fmt::format("{}/{}", R::num, R::den);
+    }
+
+    template <Complex C>
+    inline auto to_string(C c) noexcept
+    {
+        return fmt::format("{} + {}i", to_string(c.real()), to_string(c.imag()));
+    }
+
+    template <ChronoDuration CD>
+    inline auto to_string(CD cd) noexcept
+    {
+        using Period = typename CD::period;
+        if constexpr (std::is_same_v<Period, std::milli>)
+        {
+            return fmt::format("{} milliseconds", cd.count());
+        }
     }
 
     template <typename T, std::size_t N>

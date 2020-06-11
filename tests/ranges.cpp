@@ -42,14 +42,39 @@ TEST(TupleTest, TupleToString)
     EXPECT_EQ(sfy::to_string(t), R"((1, 'a', "Hello world"))");
 }
 
+TEST(RatioTest, RatioToString)
+{
+    std::ratio<2, 4> ratio1;
+    EXPECT_EQ(sfy::to_string(ratio1), "1/2");
+}
+
+TEST(ComplexTest, ComplexToString)
+{
+    std::complex<double> complex1(1.0, 2.0);
+    EXPECT_EQ(sfy::to_string(complex1), "1.0 + 2.0i");
+}
+
+TEST(ChoroTest, DurationToString)
+{
+    std::chrono::duration<int, std::milli> ms1(500);
+    EXPECT_EQ(sfy::to_string(ms1), "500 milliseconds");
+}
+
 TEST(CArraysTest, CArrayToString)
 {
+    // Integers.
     int values[] = {1, 2, 3, 4, 5};
     EXPECT_EQ(sfy::to_string(values), "[1, 2, 3, 4, 5]");
 
+    // Pairs.
     std::pair<int, char> pairs[] = {{1, 'a'},
                                     {2, 'b'}};
     EXPECT_EQ(sfy::to_string(pairs), "[(1, 'a'), (2, 'b')]");
+
+    // Tuples.
+    std::tuple<int, std::string, char> tuples[] = {{1, "hello", 'h'},
+                                                   {2, "world", 'w'}};
+    EXPECT_EQ(sfy::to_string(tuples), R"([(1, "hello", 'h'), (2, "world", 'w')])");
 }
 
 TEST(SequenceTest, VectorToString)
@@ -71,12 +96,11 @@ TEST(SequenceTest, VectorToString)
     }
     EXPECT_EQ(sfy::to_string(vec1), R"([("Hello", "World")])");
 
-    // Fundamental Tuples.
+    // Tuples.
     std::vector<std::tuple<int, char>> vec2;
     vec2.push_back(std::make_tuple(1, 'a'));
     EXPECT_EQ(sfy::to_string(vec2), "[(1, 'a')]");
 
-    // Tuple of pairs.
     std::vector<std::tuple<char, std::pair<int, char>>> vec3;
     vec3.push_back(std::make_tuple('a', std::make_pair(1, 'a')));
     EXPECT_EQ(sfy::to_string(vec3), "[('a', (1, 'a'))]");
