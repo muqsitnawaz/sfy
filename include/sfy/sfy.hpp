@@ -8,49 +8,61 @@
 
 namespace sfy
 {
-    template <Arithmetic A>
-    inline auto to_string(A a) noexcept
+    inline auto to_string(Arithmetic auto a) noexcept
     {
         return fmt::format("{}", a);
     }
 
-    template <Character C>
-    inline auto to_string(C c, bool quoted = true) noexcept
+    inline auto to_string(Character auto c, bool quoted = true) noexcept
     {
         return quoted ? fmt::format("'{}'", c) : fmt::format("{}", c);
     }
 
-    template <String S>
-    inline auto to_string(S s, bool quoted = true) noexcept
+    inline auto to_string(String auto s, bool quoted = true) noexcept
     {
         return quoted ? fmt::format(R"("{}")", s) : fmt::format("{}", s);
     }
 
     // Begin: Forward declarations.
-    template <Tuple T>
-    inline auto to_string(T t) noexcept;
+    auto to_string(Pair auto p) noexcept;
+
+    auto to_string(Tuple auto t) noexcept;
+
+    template <Ratio R>
+    auto to_string(R) noexcept;
+
+    auto to_string(Complex auto c) noexcept;
+
+    auto to_string(ChronoDuration auto cd) noexcept;
+
+    template <ChronoTimePoint CTP>
+    auto to_string(CTP ctp) noexcept;
+
+    auto to_string(ValueContainer auto container) noexcept;
+
+    auto to_string(KeyValueContainer auto container) noexcept;
+
+    // Needed for C-style arrays.
+    template <typename T>
+    concept Sfyable =
+    requires(T t) {
+        to_string(t);
+    };
 
     template <typename T, std::size_t N>
     requires Sfyable<T> && (!Character<T>)
     auto to_string(T(& c_array)[N]) noexcept;
-
-    template <ValueContainer C>
-    auto to_string(C container) noexcept;
-
-    template <KeyValueContainer C>
-    auto to_string(C container) noexcept;
     // End: Forward declarations.
 
-    template <Pair P>
-    inline auto to_string(P p) noexcept
+    inline auto to_string(Pair auto p) noexcept
     {
         return fmt::format("({}, {})", to_string(p.first), to_string(p.second));
     }
 
     namespace detail
     {
-        template <Tuple T, size_t... I>
-        inline auto tuple_impl(T t, std::index_sequence<I...>)
+        template <size_t... I>
+        inline auto tuple_impl(Tuple auto t, std::index_sequence<I...>)
         {
             std::string ret = "(";
             (..., (ret = I == 0 ? (fmt::format("{}{}", ret, to_string(std::get<I>(t))))
@@ -65,8 +77,7 @@ namespace sfy
         }
     }
 
-    template <Tuple T>
-    inline auto to_string(T t) noexcept
+    inline auto to_string(Tuple auto t) noexcept
     {
         return detail::to_string(t);
     }
@@ -77,14 +88,12 @@ namespace sfy
         return fmt::format("{}/{}", R::num, R::den);
     }
 
-    template <Complex C>
-    inline auto to_string(C c) noexcept
+    inline auto to_string(Complex auto c) noexcept
     {
         return fmt::format("{} + {}i", to_string(c.real()), to_string(c.imag()));
     }
 
-    template <ChronoDuration CD>
-    inline auto to_string(CD cd) noexcept
+    inline auto to_string(ChronoDuration auto cd) noexcept
     {
         return fmt::format("{}", cd);
     }
@@ -94,6 +103,30 @@ namespace sfy
     {
         auto tt = CTP::clock::to_time_t(ctp);
         return fmt::format("{}", to_string(ctime(&tt), false));
+    }
+
+    auto to_string(ValueContainer auto container) noexcept
+    {
+        std::string ret = "[";
+        for (size_t ctr = 0; auto elem : container)
+        {
+            ret = ctr == 0 ? fmt::format("{}{}", ret, to_string(elem))
+                           : fmt::format("{}, {}", ret, to_string(elem));
+            ctr += 1;
+        }
+        return fmt::format("{}]", ret);
+    }
+
+    auto to_string(KeyValueContainer auto container) noexcept
+    {
+        std::string ret;
+        for (size_t ctr = 0; auto elem : container)
+        {
+            ret = ctr == 0 ? fmt::format("{}{}: {}", ret, to_string(elem.first), to_string(elem.second))
+                           : fmt::format("{}, {}: {}", ret, to_string(elem.first), to_string(elem.second));
+            ctr += 1;
+        }
+        return fmt::format("{{{}}}", ret);
     }
 
     template <typename T, std::size_t N>
@@ -107,31 +140,5 @@ namespace sfy
                          : fmt::format("{}, {}", ret, to_string(c_array[i]));
         }
         return fmt::format("{}]", ret);
-    }
-
-    template <ValueContainer C>
-    auto to_string(C container) noexcept
-    {
-        std::string ret = "[";
-        for (size_t ctr = 0; auto elem : container)
-        {
-            ret = ctr == 0 ? fmt::format("{}{}", ret, to_string(elem))
-                           : fmt::format("{}, {}", ret, to_string(elem));
-            ctr += 1;
-        }
-        return fmt::format("{}]", ret);
-    }
-
-    template <KeyValueContainer C>
-    auto to_string(C container) noexcept
-    {
-        std::string ret;
-        for (size_t ctr = 0; auto elem : container)
-        {
-            ret = ctr == 0 ? fmt::format("{}{}: {}", ret, to_string(elem.first), to_string(elem.second))
-                           : fmt::format("{}, {}: {}", ret, to_string(elem.first), to_string(elem.second));
-            ctr += 1;
-        }
-        return fmt::format("{{{}}}", ret);
     }
 }

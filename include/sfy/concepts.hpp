@@ -16,6 +16,11 @@ namespace sfy
     concept ForwardIterator = std::is_same_v<Iterator_c<T>, std::forward_iterator_tag>;
 
     template <typename T>
+    concept Iterator = RandomAccessIterator<Iterator_t<T>> ||
+                       BidirectionalIterator<Iterator_t<T>> ||
+                       ForwardIterator<Iterator_t<T>>;
+
+    template <typename T>
     concept Arithmetic = is_arithmetic_v<T>();
 
     template <typename T>
@@ -43,83 +48,26 @@ namespace sfy
     concept ChronoTimePoint = is_std_chrono_time_point_v<T>;
 
     template <typename T>
-    concept Sequence =
-    requires(T t) {
-        typename Value_t<T>;
-        typename Size_t<T>;
-
-        typename Iterator_t<T>;
-
-        { std::begin(t) };
-        { std::end(t) };
-
-        requires RandomAccessIterator<Iterator_t<T>>;
-        requires std::is_same_v<Value_t<T>, Value_t<Iterator_t<T>>>;
-    };
-
-    template <typename T>
-    concept OrderedValues =
-    requires(T t) {
-        typename Key_t<T>;
-        typename Value_t<T>;
-        typename Size_t<T>;
-
-        typename Iterator_t<T>;
-
-        { std::begin(t) };
-        { std::end(t) };
-
-        requires BidirectionalIterator<Iterator_t<T>>;
-        requires std::is_same_v<Value_t<T>, Value_t<Iterator_t<T>>>;
-    };
-
-    template <typename T>
-    concept OrderedKeyValues =
-    requires(T t) {
-        typename Mapped_t<T>;
-
-        requires OrderedValues<T>;
-    };
-
-    template <typename T>
-    concept UnorderedValues =
-    requires(T t)
+    concept ValueContainer =
+    requires(T cont)
     {
-        typename Key_t<T>;
         typename Value_t<T>;
         typename Size_t<T>;
 
         typename Iterator_t<T>;
 
-        { std::begin(t) };
-        { std::end(t) };
+        { std::begin(cont) };
+        { std::end(cont) };
 
-        requires ForwardIterator<Iterator_t<T>>;
+        requires Iterator<T>;
         requires std::is_same_v<Value_t<T>, Value_t<Iterator_t<T>>>;
+        requires !String<T>;
     };
 
     template <typename T>
-    concept UnorderedKeyValues =
-    requires(T t)
-    {
-        typename Mapped_t<T>;
-
-        requires UnorderedValues<T>;
-    };
-
-    template <typename T>
-    concept ValueContainer = (Sequence<T> && !String<T>) ||
-                             (OrderedValues<T> && !OrderedKeyValues<T>) ||
-                             (UnorderedValues<T> && !UnorderedKeyValues<T>);
-
-    template <typename T>
-    concept KeyValueContainer = OrderedKeyValues<T> || UnorderedKeyValues<T>;
-
-    template <typename T>
-    concept Sfyable = Arithmetic<T> ||
-                      Character<T> || String<T> ||
-                      Pair<T> || Tuple<T> ||
-                      Ratio<T> || Complex<T> ||
-                      ChronoDuration<T> || ChronoTimePoint<T> ||
-                      ValueContainer<T> || KeyValueContainer<T>;
+    concept KeyValueContainer = ValueContainer<T> &&
+                                requires(T cont) {
+                                    typename Key_t<T>;
+                                    typename Mapped_t<T>;
+                                };
 }
