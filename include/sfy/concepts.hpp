@@ -6,32 +6,32 @@
 
 namespace sfy
 {
-    template <typename T1, typename T2>
-    concept Same_t = std::is_same_v<T1, T2>;
-
     template <typename T>
-    concept Character = is_character_v<std::remove_cv_t<T>>();
+    concept Character = is_character_v<T>();
 
     template <typename T>
     concept Arithmetic = sfy::is_arithmetic_v<T>();
 
     template <typename T>
-    concept String = is_c_str_v<T>() || is_std_basic_string_v<T>();
+    concept String = is_c_str_v<T>() || is_std_basic_string_v<T>;
 
     template <typename T>
-    concept Pair = is_pair_v<T>();
+    concept Pair = is_pair_v<T>;
 
     template <typename T>
-    concept Tuple = is_tuple_v<T>();
+    concept Tuple = is_tuple_v<T>;
 
     template <typename T>
-    concept Ratio = is_std_ratio_v<T>();
+    concept Ratio = is_std_ratio_v<T>;
 
     template <typename T>
-    concept Complex = is_std_complex_v<T>();
+    concept Complex = is_std_complex_v<T>;
 
     template <typename T>
-    concept ChronoDuration = is_std_chrono_duration_v<T>();
+    concept ChronoDuration = is_std_chrono_duration_v<T>;
+
+    template <typename T>
+    concept ChronoTimePoint = is_std_chrono_time_point_v<T>;
 
     template <typename T>
     concept RandomAccessIterator = std::is_same_v<Iterator_c<T>, std::random_access_iterator_tag>;
@@ -54,7 +54,7 @@ namespace sfy
         { std::end(t) };
 
         requires RandomAccessIterator<Iterator_t<T>>;
-        requires Same_t<Value_t<T>, Value_t<Iterator_t<T>>>;
+        requires std::is_same_v<Value_t<T>, Value_t<Iterator_t<T>>>;
     };
 
     template <typename T>
@@ -70,7 +70,7 @@ namespace sfy
         { std::end(t) };
 
         requires BidirectionalIterator<Iterator_t<T>>;
-        requires Same_t<Value_t<T>, Value_t<Iterator_t<T>>>;
+        requires std::is_same_v<Value_t<T>, Value_t<Iterator_t<T>>>;
     };
 
     template <typename T>
@@ -95,7 +95,7 @@ namespace sfy
         { std::end(t) };
 
         requires ForwardIterator<Iterator_t<T>>;
-        requires Same_t<Value_t<T>, Value_t<Iterator_t<T>>>;
+        requires std::is_same_v<Value_t<T>, Value_t<Iterator_t<T>>>;
     };
 
     template <typename T>
@@ -116,8 +116,10 @@ namespace sfy
     concept KeyValueContainer = OrderedKeyValues<T> || UnorderedKeyValues<T>;
 
     template <typename T>
-    concept Sfyable = Character<T> || Arithmetic<T> || String<T> ||
+    concept Sfyable = Arithmetic<T> ||
+                      Character<T> || String<T> ||
                       Pair<T> || Tuple<T> ||
                       Ratio<T> || Complex<T> ||
+                      ChronoDuration<T> || ChronoTimePoint<T> ||
                       ValueContainer<T> || KeyValueContainer<T>;
 }

@@ -34,6 +34,9 @@ TEST(PairTest, PairToString)
     pair1.first = {1, 2, 3};
     pair1.second = {'a', 'b', 'c'};
     EXPECT_EQ(sfy::to_string(pair1), "([1, 2, 3], ['a', 'b', 'c'])");
+
+    const std::pair<int, int> cpair = {10, 20};
+    EXPECT_EQ(sfy::to_string(cpair), "(10, 20)");
 }
 
 TEST(TupleTest, TupleToString)
@@ -56,8 +59,29 @@ TEST(ComplexTest, ComplexToString)
 
 TEST(ChoroTest, DurationToString)
 {
-    std::chrono::duration<int, std::milli> ms1(500);
-    EXPECT_EQ(sfy::to_string(ms1), "500 milliseconds");
+    std::chrono::nanoseconds dur(1);
+    EXPECT_EQ(sfy::to_string(dur), "1 nanosecond");
+
+    std::chrono::microseconds dur1(1000);
+    EXPECT_EQ(sfy::to_string(dur1), "1000 microseconds");
+
+    std::chrono::milliseconds dur2(500);
+    EXPECT_EQ(sfy::to_string(dur2), "500 milliseconds");
+
+    std::chrono::seconds dur3(10);
+    EXPECT_EQ(sfy::to_string(dur3), "10 seconds");
+
+    std::chrono::hours dur4(1);
+    EXPECT_EQ(sfy::to_string(dur4), "1 hour");
+
+    std::chrono::years dur5(4);
+    EXPECT_EQ(sfy::to_string(dur5), "4 years");
+}
+
+TEST(ChronoTest, TimePointToString)
+{
+    std::chrono::system_clock::time_point tp(std::chrono::seconds(1));
+    EXPECT_EQ(sfy::to_string(tp), "Wed Dec 31 16:00:01 1969\n");
 }
 
 TEST(CArraysTest, CArrayToString)

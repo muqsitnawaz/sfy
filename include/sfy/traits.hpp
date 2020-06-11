@@ -16,14 +16,16 @@ namespace sfy
     template <typename T>
     inline constexpr bool is_character_v() noexcept
     {
-        auto is_char = std::is_same_v<T, char> ||
-                       std::is_same_v<T, signed char> || std::is_same_v<T, unsigned char> ||
-                       std::is_same_v<T, wchar_t>;
+        using _T = std::remove_cv_t<T>;
+
+        auto is_char = std::is_same_v<_T, char> ||
+                       std::is_same_v<_T, signed char> || std::is_same_v<_T, unsigned char> ||
+                       std::is_same_v<_T, wchar_t>;
 #ifndef _LIBCPP_NO_HAS_CHAR8_T
-        is_char = is_char || std::is_same_v<T, char8_t>;
+        is_char = is_char || std::is_same_v<_T, char8_t>;
 #endif
 #ifndef _LIBCPP_HAS_NO_UNICODE_CHARS
-        is_char = is_char || std::is_same_v<T, char16_t> || std::is_same_v<T, char32_t>;
+        is_char = is_char || std::is_same_v<_T, char16_t> || std::is_same_v<_T, char32_t>;
 #endif
         return is_char;
     }
@@ -48,10 +50,7 @@ namespace sfy
     struct is_std_basic_string<std::basic_string<C, T, A>> : std::true_type {};
 
     template <typename T>
-    inline constexpr bool is_std_basic_string_v() noexcept
-    {
-        return is_std_basic_string<T>::value;
-    }
+    inline constexpr bool is_std_basic_string_v = is_std_basic_string<T>::value;
     // End: std::string.
 
     // Begin: std::pair.
@@ -62,10 +61,7 @@ namespace sfy
     struct is_std_pair<std::pair<T1, T2>> : std::true_type {};
 
     template <typename T>
-    inline constexpr bool is_pair_v() noexcept
-    {
-        return is_std_pair<T>::value/* || is_ranges_pair<T>::value*/;
-    }
+    inline constexpr bool is_pair_v = is_std_pair<T>::value;
     // End: std::pair.
 
     // Begin: std::tuple.
@@ -76,10 +72,7 @@ namespace sfy
     struct is_std_tuple<std::tuple<Ts...>> : std::true_type {};
 
     template <typename T>
-    inline constexpr bool is_tuple_v() noexcept
-    {
-        return is_std_tuple<T>::value;
-    }
+    inline constexpr bool is_tuple_v = is_std_tuple<T>::value;
     // End: std::tuple.
 
     // Begin: std::ratio.
@@ -89,11 +82,8 @@ namespace sfy
     template <intmax_t Num, intmax_t Den>
     struct is_std_ratio<std::ratio<Num, Den>> : std::true_type {};
 
-    template <typename T>
-    inline constexpr bool is_std_ratio_v() noexcept
-    {
-        return is_std_ratio<T>();
-    }
+    template <class T>
+    inline constexpr bool is_std_ratio_v = is_std_ratio<T>::value;
     // End: std::ratio.
 
     // Begin: std::complex.
@@ -104,13 +94,10 @@ namespace sfy
     struct is_std_complex<std::complex<T>> : std::true_type {};
 
     template <typename T>
-    inline constexpr bool is_std_complex_v() noexcept
-    {
-        return is_std_complex<T>();
-    }
+    inline constexpr bool is_std_complex_v = is_std_complex<T>::value;
     // End: std::complex.
 
-    // Begin: std::chrono::duration.
+    // Begin: std::chrono.
     template <typename T>
     struct is_std_chrono_duration : std::false_type {};
 
@@ -118,9 +105,15 @@ namespace sfy
     struct is_std_chrono_duration<std::chrono::duration<R, P>> : std::true_type {};
 
     template <typename T>
-    inline constexpr bool is_std_chrono_duration_v() noexcept
-    {
-        return is_std_chrono_duration<T>();
-    }
-    // End: std::chrono::duration.
+    inline constexpr bool is_std_chrono_duration_v = is_std_chrono_duration<T>::value;
+
+    template <typename T>
+    struct is_std_chrono_time_point : std::false_type {};
+
+    template <typename C, typename D>
+    struct is_std_chrono_time_point<std::chrono::time_point<C, D>> : std::true_type {};
+
+    template <typename T>
+    inline constexpr bool is_std_chrono_time_point_v = is_std_chrono_time_point<T>::value;
+    // End: std::chrono.
 }
