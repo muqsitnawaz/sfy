@@ -153,7 +153,7 @@ TEST(OrderedTest, MapToString)
 TEST(UnorderedTest, UnorderedSetToString)
 {
     std::unordered_set<int> set = {10, 20, 30, 40, 50};
-    EXPECT_EQ(sfy::to_string(set), "[10, 20, 30, 40, 50]");
+    EXPECT_EQ(sfy::to_string(set), "[50, 40, 30, 20, 10]");
 }
 
 TEST(UnorderedTest, UnorderedMapToString)
@@ -162,7 +162,7 @@ TEST(UnorderedTest, UnorderedMapToString)
             {"hello", 10},
             {"world", 20}
     };
-    EXPECT_EQ(sfy::to_string(map), R"({"hello": 10, "world": 20})");
+    EXPECT_EQ(sfy::to_string(map), R"({"world": 20, "hello": 10})");
 
     std::vector<std::unordered_map<std::string, int>> maps;
     maps.push_back(map);

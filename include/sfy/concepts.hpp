@@ -61,7 +61,7 @@ namespace sfy
 
         requires Iterator<T>;
         requires std::is_same_v<Value_t<T>, Value_t<Iterator_t<T>>>;
-        requires !String<T>;
+        requires !String<std::decay_t<T>>;
     };
 
     template <typename T>

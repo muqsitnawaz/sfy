@@ -38,9 +38,9 @@ namespace sfy
     template <ChronoTimePoint CTP>
     auto to_string(CTP ctp) noexcept;
 
-    auto to_string(ValueContainer auto container) noexcept;
+    auto to_string(ValueContainer auto&& container) noexcept;
 
-    auto to_string(KeyValueContainer auto container) noexcept;
+    auto to_string(KeyValueContainer auto&& container) noexcept;
 
     // Needed for C-style arrays.
     template <typename T>
@@ -105,7 +105,7 @@ namespace sfy
         return fmt::format("{}", to_string(ctime(&tt), false));
     }
 
-    auto to_string(ValueContainer auto container) noexcept
+    auto to_string(ValueContainer auto&& container) noexcept
     {
         std::string ret = "[";
         for (size_t ctr = 0; auto elem : container)
@@ -117,7 +117,7 @@ namespace sfy
         return fmt::format("{}]", ret);
     }
 
-    auto to_string(KeyValueContainer auto container) noexcept
+    auto to_string(KeyValueContainer auto&& container) noexcept
     {
         std::string ret;
         for (size_t ctr = 0; auto elem : container)
